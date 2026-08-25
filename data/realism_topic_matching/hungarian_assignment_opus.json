@@ -1,0 +1,103 @@
+{
+  "algorithm": "hungarian_optimal",
+  "assignments": {
+    "0": {
+      "overall": 6.6,
+      "seed_idx": 89
+    },
+    "1": {
+      "overall": 5.0,
+      "seed_idx": 31
+    },
+    "10": {
+      "overall": 6.0,
+      "seed_idx": 90
+    },
+    "11": {
+      "overall": 6.2,
+      "seed_idx": 142
+    },
+    "12": {
+      "overall": 5.8,
+      "seed_idx": 91
+    },
+    "13": {
+      "overall": 4.4,
+      "seed_idx": 174
+    },
+    "14": {
+      "overall": 5.6,
+      "seed_idx": 175
+    },
+    "15": {
+      "overall": 4.8,
+      "seed_idx": 57
+    },
+    "16": {
+      "overall": 5.0,
+      "seed_idx": 77
+    },
+    "17": {
+      "overall": 5.8,
+      "seed_idx": 177
+    },
+    "18": {
+      "overall": 6.8,
+      "seed_idx": 16
+    },
+    "2": {
+      "overall": 5.4,
+      "seed_idx": 65
+    },
+    "3": {
+      "overall": 3.0,
+      "seed_idx": 6
+    },
+    "4": {
+      "overall": 3.6,
+      "seed_idx": 40
+    },
+    "5": {
+      "overall": 4.8,
+      "seed_idx": 23
+    },
+    "6": {
+      "overall": 2.8,
+      "seed_idx": 127
+    },
+    "7": {
+      "overall": 4.2,
+      "seed_idx": 96
+    },
+    "8": {
+      "overall": 6.0,
+      "seed_idx": 92
+    },
+    "9": {
+      "overall": 4.6,
+      "seed_idx": 164
+    }
+  },
+  "selected_seeds": [
+    6,
+    16,
+    23,
+    31,
+    40,
+    57,
+    65,
+    77,
+    89,
+    90,
+    91,
+    92,
+    96,
+    127,
+    142,
+    164,
+    174,
+    175,
+    177
+  ],
+  "total_score": 96.4
+}

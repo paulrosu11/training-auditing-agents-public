@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "training-auditing-agents"
+version = "1.0.0"
+description = "Training Alignment Auditors via Reinforcement Learning -- evaluation suite (untrained-baseline reproductions)"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "anthropic>=0.49.0",
+    "openai>=1.0",
+    "httpx",
+    "pydantic",
+    "jinja2",
+    "numpy",
+    "scipy",
+    "pandas",
+    "scikit-learn",
+    "tqdm",
+    "petri @ git+https://github.com/meridianlabs-ai/inspect_petri.git@f02b3ec70a6b9c2a1a7da172b2f3f69a1e1b0585",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["core*", "evals*", "orchestration*"]
+
+[project.optional-dependencies]
+clustering = ["matplotlib", "seaborn"]
+dev = ["pytest", "ruff"]

@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.11.8"
+      - name: Install frozen environment
+        run: uv sync --frozen --extra dev
+      - name: Run offline smoke
+        run: uv run --frozen python tests/smoke_offline.py
+      - name: Run test suite
+        run: uv run --frozen python -m pytest tests -v
+      - name: Scan public release data and documentation
+        run: uv run --frozen python tools/release_safety.py README.md DATASET_CARD.md THIRD_PARTY_NOTICES.md SECURITY.md LICENSE .env.example data training_data
+
+  gitleaks:
+    name: Gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out complete history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Install checksum-verified Gitleaks
+        shell: bash
+        env:
+          GITLEAKS_VERSION: "8.30.1"
+          GITLEAKS_RELEASE_URL: "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1"
+          GITLEAKS_ARCHIVE: "gitleaks_8.30.1_linux_x64.tar.gz"
+          GITLEAKS_CHECKSUMS: "gitleaks_8.30.1_checksums.txt"
+          GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error \
+            --output "$RUNNER_TEMP/$GITLEAKS_ARCHIVE" \
+            "$GITLEAKS_RELEASE_URL/$GITLEAKS_ARCHIVE"
+          curl --fail --location --silent --show-error \
+            --output "$RUNNER_TEMP/$GITLEAKS_CHECKSUMS" \
+            "$GITLEAKS_RELEASE_URL/$GITLEAKS_CHECKSUMS"
+          grep -Fqx \
+            "$GITLEAKS_SHA256  $GITLEAKS_ARCHIVE" \
+            "$RUNNER_TEMP/$GITLEAKS_CHECKSUMS"
+          (
+            cd "$RUNNER_TEMP"
+            printf '%s  %s\n' "$GITLEAKS_SHA256" "$GITLEAKS_ARCHIVE" \
+              | sha256sum --check -
+          )
+          mkdir -p "$RUNNER_TEMP/gitleaks-bin"
+          tar -xzf "$RUNNER_TEMP/$GITLEAKS_ARCHIVE" \
+            -C "$RUNNER_TEMP/gitleaks-bin" gitleaks
+          chmod 0755 "$RUNNER_TEMP/gitleaks-bin/gitleaks"
+          echo "$RUNNER_TEMP/gitleaks-bin" >> "$GITHUB_PATH"
+      - name: Scan complete current tree
+        run: gitleaks dir --no-banner --redact=100 .
+      - name: Scan event commit range
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITLEAKS_ENABLE_COMMENTS: "false"
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
+          GITLEAKS_ENABLE_SUMMARY: "false"
+          GITLEAKS_VERSION: "8.30.1"
