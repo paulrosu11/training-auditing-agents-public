@@ -1,7 +1,7 @@
 # training-auditing-agents
 
 Evaluation code and training data for **"Training Alignment Auditors via
-Reinforcement Learning"** (NeurIPS 2026). The repo reproduces the paper's eight
+Reinforcement Learning"**. The repo reproduces the paper's eight
 evaluations on untrained frontier baseline models and ships the seed data the
 paper used for GRPO training.
 
